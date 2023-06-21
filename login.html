@@ -1,0 +1,56 @@
+<html>
+<head>
+  <title>Tela de Login</title>
+</head>
+<body>
+  <h2>Tela de Login</h2>
+  <form id="loginForm">
+    <label for="usuario">Usuário:</label>
+    <input type="text" id="usuario" name="usuario" required><br><br>
+    <label for="senha">Senha:</label>
+    <input type="password" id="senha" name="senha" required><br><br>
+    <input type="submit" value="Entrar">
+  </form>
+  <p id="mensagem"></p>
+
+  <script>
+    // Event listener para o formulário de login
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+      var form = event.target;
+      var usuario = form.elements["usuario"].value; // Obtém o valor do campo de usuário
+      var senha = form.elements["senha"].value; // Obtém o valor do campo de senha
+
+     // Fazer a requisição para a planilha usando a API do Google Sheets
+      fetch('https://sheets.googleapis.com/v4/spreadsheets/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/values/A:B?key=AIzaSyB7anIj9Q08ueFQVQ6aevLttAkzJNNAGXs')
+        .then(response => response.json()) // Converter a resposta para JSON
+        .then(data => {
+          var rows = data.values; // Obter as linhas da planilha
+          var loginSuccessful = false;
+
+          // Verificar se as credenciais são válidas
+          for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            var storedUsuario = row[0]; // A coluna A contém os usuários na planilha
+            var storedSenha = row[1]; // A coluna B contém as senhas na planilha
+
+            if (usuario === storedUsuario && senha === storedSenha) {
+              loginSuccessful = true; // Defina a variável como verdadeira se as credenciais coincidirem
+              break;
+            }
+          }
+
+          if (loginSuccessful) {
+            document.getElementById("mensagem").textContent = "Login bem-sucedido!";
+            // Redirecionar para a página desejada
+          } else {
+            document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+          }
+        })
+        .catch(error => {
+          console.log("Erro ao acessar a planilha:", error);
+        });
+    });
+  </script>
+</body>
+</html>
