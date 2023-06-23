@@ -1,33 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Tela de Login</title>
 </head>
+
 <body>
-  <h2>Tela de Login</h2>
   <form id="loginForm">
     <label for="usuario">Usuário:</label>
     <input type="text" id="usuario" name="usuario" required><br><br>
     <label for="senha">Senha:</label>
     <input type="password" id="senha" name="senha" required><br><br>
-    <input type="submit" value="Entrar">
+    <button type="button" onclick="realizarLogin()">Entrar</button>
+    <button type="button" onclick="recuperarSenha()">Recuperar Senha</button>
   </form>
   <p id="mensagem"></p>
 
-  <h2>Recuperar Senha</h2>
-  <form id="recuperarSenhaForm">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
-    <input type="submit" value="Recuperar Senha">
-  </form>
-
   <script>
-    // Event listener para o formulário de login
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // Impede o envio padrão do formulário
-      var form = event.target;
-      var usuario = form.elements["usuario"].value; // Obtém o valor do campo de usuário
-      var senha = form.elements["senha"].value; // Obtém o valor do campo de senha
+    // Função para realizar o login
+    function realizarLogin() {
+      var usuario = document.getElementById("usuario").value; // Obtém o valor do campo de usuário
+      var senha = document.getElementById("senha").value; // Obtém o valor do campo de senha
 
       // Fazer a requisição para a planilha usando a API do Google Sheets
       fetch('https://sheets.googleapis.com/v4/spreadsheets/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/values/A:C?key=AIzaSyB7anIj9Q08ueFQVQ6aevLttAkzJNNAGXs')
@@ -51,76 +44,22 @@
 
           if (loginSuccessful) {
             document.getElementById("mensagem").textContent = "Login bem-sucedido!";
-            // Redirecionar para a página desejada
+            window.open("https://sites.google.com/view/testeiserj/index?authuser=0", "_blank"); // Redireciona para a página desejada no Google Sites
           } else {
             document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+            window.open("https://sites.google.com/view/testeiserj/erro?authuser=0", "_blank"); // Redireciona para a página desejada no Google Sites
           }
         })
         .catch(error => {
           console.log("Erro ao acessar a planilha:", error);
         });
-    });
+    }
 
-    // Event listener para o formulário de recuperação de senha
-    document.getElementById("recuperarSenhaForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // Impede o envio padrão do formulário
-      var form = event.target;
-      var email = form.elements["email"].value; // Obtém o valor do campo de email
-
-      // Fazer a requisição para a planilha usando a API do Google Sheets
-      fetch('https://sheets.googleapis.com/v4/spreadsheets/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/values/A:C?key=AIzaSyB7anIj9Q08ueFQVQ6aevLttAkzJNNAGXs')
-        .then(response => response.json()) // Converter a resposta para JSON
-        .then(data => {
-          var rows = data.values; // Obter as linhas da planilha
-          var senhaEncontrada = false;
-
-          // Verificar se o email está presente na planilha e obter a senha correspondente
-          for (var i = 1; i < rows.length; i++) {
-            var row = rows[i];
-            var storedEmail = row[0]; // A coluna A contém os emails na planilha
-            var storedSenha = row[1]; // A coluna B contém as senhas na planilha
-
-            if (email === storedEmail) {
-              senhaEncontrada = true; // Defina a variável como verdadeira se o email for encontrado
-              // Enviar email com a senha para o endereço de email informado
-              enviarEmailSenha(email, storedSenha);
-              break;
-            }
-          }
-
-          if (senhaEncontrada) {
-            document.getElementById("mensagem").textContent = "Um email com a senha foi enviado para o endereço fornecido.";
-          } else {
-            document.getElementById("mensagem").textContent = "Email não encontrado na planilha.";
-          }
-        })
-        .catch(error => {
-          console.log("Erro ao acessar a planilha:", error);
-        });
-    });
-
-    // Função para enviar o email com a senha
-    function enviarEmailSenha(email, senha) {
-      // Fazer a requisição para a API do Elastic Email
-      fetch('https://api.elasticemail.com/v2/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'apikey=2B092EE3F86087032D2BFDDEA79D1A23D09023B9B1CD838FB637CE02DE6EB7A8248FC14B7CF1C399A3B2D3E8087FC4F5' +
-              '&from=davi.medeiros.silva1@gmail.com' +
-              '&to=' + encodeURIComponent(email) +
-              '&subject=Recuperação de Senha' +
-              '&body=' + encodeURIComponent('Sua senha é: ' + senha)
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-      })
-      .catch(error => {
-        console.log("Erro ao enviar o email:", error);
-      });
+    // Função para recuperar a senha
+    function recuperarSenha() {
+      window.open("https://sites.google.com/view/testeiserj/recuperar-senha?authuser=0", "_blank"); // Redireciona para a página de recuperação de senha no Google Sites
     }
   </script>
 </body>
+
 </html>
