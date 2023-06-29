@@ -1,5 +1,5 @@
 # Sistema de Login
-<li><a href="https://docs.google.com/spreadsheets/d/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/edit?usp=sharing" target="_blank"><b>Planilha Excel - Google</b></a></li>
+<li>Acesse a Planilha aqui: <a href="https://docs.google.com/spreadsheets/d/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/edit?usp=sharing" target="_blank"><b>Planilha Excel - Google</b></a></li>
 <hr>
 <h1>Tela de Login</h1>
 <p>Na tela de login, o usuário possui dois campos que são obrigatórios para serem preenchidos. No primeiro campo, o usuário deverá preencher com o e-mail institucional ou com o CPF. No campo de login, o usuário pode usar o CPF, pois nem todos os alunos possuem e-mail institucional. 
