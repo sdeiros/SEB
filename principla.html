@@ -1,31 +1,239 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tela Principal</title>
+    <title>Tela Principal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #loginContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            top: 0%;
+        }
+
+        #loginForm label[for="usuario-txt"],
+        #loginForm label[for="senha-txt"] {
+            text-align: left;
+            margin-bottom: 0.2rem;
+            margin-left: 0px;
+            width: 80%;
+            height: 30px;
+            color: #2E2E2E;
+            font-size: 14px;
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        #loginForm input[type="text"],
+        #loginForm input[type="password"] {
+            width: 80%;
+            height: 30px;
+            padding: 5px;
+            margin: 0 auto 8px;
+            border-radius: 6px;
+            border: 1px solid #969696;
+            font-size: 14px;
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            padding-left: 0.8rem;
+            color: #162741;
+            top: 0px;
+            margin-top: 0px;
+        }
+
+        #loginForm p {
+            margin: 0 auto;
+            margin-bottom: 1.5rem;
+            margin-left: 30px;
+            color: #828282;
+            font-size: 12px;
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            text-align: left;
+        }
+
+        #loginForm a {
+            position: fixed;
+            color: #2E2E2E;
+            font-size: 12px;
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            cursor: pointer;
+            text-align: left;
+            top: 92%; /* Adjusted the top position */
+        }
+
+        #loginForm button[type="button-enter"] {
+            position: fixed;
+            width: 22%;
+            height: 30px;
+            color: #FFFFFFFF;
+            font-size: 14px;
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            border: none;
+            border-radius: 4px;
+            background: #162741;
+            cursor: pointer;
+            top: 75%; /* Adjusted the top position */
+        }
+
+        #logo {
+            top: -10px; /* Adjusted the top position */
+            width: 50px;
+            max-width: 80px;
+            margin-bottom: 10px;
+            margin-top: 0
+
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Tela Principal</h1>
-  <p id="mensagem"></p>
+    <div id="loginContainer">
+        <form id="loginForm">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Simbolo_ISERJ.png" alt="Logo" id="logo">
+            <label for="usuario-txt">E-mail Institucional ou CPF:</label>
+            <input type="text" id="usuario" name="usuario" required>
+            <p>CPF: apenas os números</p><br>
+            <label for="senha-txt">Senha:</label>
+            <input type="password" id="senha" name="senha" required><br><br>
+            <a href="#" onclick="recuperarSenha()">esqueci a senha</a>
+            <button type="button-enter" onclick="realizarLogin()">Entrar</button>
+        </form>
+    </div>
 
-  <script>
-    // Função para obter o parâmetro da URL
-    function getParameterByName(name) {
-      var url = window.location.href;
-      name = name.replace(/[\[\]]/g, '\\$&');
-      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
 
-    // Obter o nome do usuário da URL
-    var nomeUsuario = getParameterByName('usuario');
 
-    if (nomeUsuario) {
-      var mensagemBoasVindas = "Olá, " + nomeUsuario + "!";
-      document.getElementById("mensagem").textContent = mensagemBoasVindas;
-    }
-  </script>
+
+    <div id="dadosUsuario">
+        <h2 id="nomeUsuario"></h2>
+        <ul id="listaDocumentos"></ul>
+    </div>
+
+    <script>
+        // Função para realizar o login na página index
+        function realizarLogin() {
+            var usuario = document.getElementById("usuario").value; // Obtém o valor do campo de usuário
+            var senha = document.getElementById("senha").value; // Obtém o valor do campo de senha
+
+            // Fazer a requisição para a planilha usando a API do Google Sheets
+            fetch('https://sheets.googleapis.com/v4/spreadsheets/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/values/A:D?key=AIzaSyB7anIj9Q08ueFQVQ6aevLttAkzJNNAGXs')
+                .then(response => response.json()) // Converter a resposta para JSON
+                .then(data => {
+                    var rows = data.values; // Obter as linhas da planilha
+                    var loginSuccessful = false;
+                    var nomeCompleto = "";
+
+                    // Verificar se as credenciais são válidas
+                    for (var i = 1; i < rows.length; i++) {
+                        var row = rows[i];
+                        var storedEmail = row[0]; // A coluna A contém os e-mails na planilha
+                        var storedCPF = row[2]; // A coluna C contém os CPFs na planilha
+                        var storedSenha = row[1]; // A coluna B contém as senhas na planilha
+                        var storedNomeCompleto = row[3]; // A coluna D contém o nome completo na planilha
+
+                        if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+                            loginSuccessful = true; // Defina a variável como verdadeira se as credenciais coincidirem
+                            nomeCompleto = storedNomeCompleto;
+                            break;
+                        }
+                    }
+
+                    if (loginSuccessful) {
+                        document.getElementById("loginContainer").style.display = "none"; // Oculta os campos de login
+                        document.getElementById("dadosUsuario").style.display = "block"; // Exibe os dados do usuário
+
+                        // Exibe o nome do usuário
+                        var nomeUsuario = nomeCompleto.split(" "); // Divide o nome completo em um array de palavras
+                        var primeiroNome = nomeUsuario[0]; // Obtém o primeiro nome
+                        var segundoNome = nomeUsuario[1]; // Obtém o segundo nome (se existir)
+
+                        document.getElementById("nomeUsuario").textContent = "Olá, " + primeiroNome + " " + segundoNome + "!";
+
+                        // Função para buscar e exibir os documentos do usuário
+                        function buscarDocumentosDoUsuario(nomeUsuario, folderId) {
+                            var url = "https://www.googleapis.com/drive/v3/files?q=name%20contains%20%27" + encodeURIComponent(nomeUsuario) + "%27%20and%20%27" + encodeURIComponent(folderId) + "%27%20in%20parents&key=AIzaSyDDBEKKqEsvTDb66TbmvtfZMb8wyStdnXk";
+
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(data => {
+                                    var files = data.files;
+                                    var listaDocumentos = document.getElementById('listaDocumentos');
+                                    listaDocumentos.innerHTML = '';
+
+                                    if (files && files.length > 0) {
+                                        for (var i = 0; i < files.length; i++) {
+                                            var file = files[i];
+                                            var documentoNome = file.name;
+                                            var documentoId = file.id;
+                                            var documentoLink = "https://drive.google.com/file/d/" + documentoId;
+                                            var listItem = document.createElement('li');
+                                            var link = document.createElement('a');
+                                            link.href = documentoLink;
+                                            link.textContent = documentoNome;
+                                            listItem.appendChild(link);
+                                            listaDocumentos.appendChild(listItem);
+                                        }
+                                    } else {
+                                        document.getElementById("mensagem").textContent = 'Nenhum documento encontrado.';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log("Erro ao obter os dados do Google Drive: " + error);
+                                });
+                        }
+
+                        // Chamar a função buscarDocumentosDoUsuario para exibir os documentos do usuário
+                        buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
+                    } else {
+                        document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+                    }
+                })
+                .catch(error => {
+                    console.log("Erro ao acessar a planilha:", error);
+                });
+        }
+
+        // Função para recuperar a senha
+        function recuperarSenha() {
+            window.open("https://sites.google.com/view/testeiserj/recuperar-senha?authuser=0", "_blank"); // Redireciona para a página de recuperação de senha no Google Sites
+        }
+    </script>
 </body>
+
 </html>
