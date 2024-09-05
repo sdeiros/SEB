@@ -1,168 +1,129 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Tela Principal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            width: 100vw;
-            margin: 0;
-            overflow: hidden;
+            background-color: #f8f9fa;
         }
 
         #loginContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
-
-        #loginForm {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            top: 0%;
-        }
-
-        #loginForm label[for="usuario-txt"],
-        #loginForm label[for="senha-txt"] {
-            text-align: left;
-            margin-bottom: 0.2rem;
-            margin-left: 0px;
-            width: 80%;
-            height: 30px;
-            color: #2E2E2E;
-            font-size: 14px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-        }
-
-        #loginForm input[type="text"],
-        #loginForm input[type="password"] {
-            width: 80%;
-            height: 30px;
-            padding: 5px;
-            margin: 0 auto 8px;
-            border-radius: 6px;
-            border: 1px solid #969696;
-            font-size: 14px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            padding-left: 0.8rem;
-            color: #162741;
-            top: 0px;
-            margin-top: 0px;
-        }
-
-        #loginForm p {
-            margin: 0 auto;
-            margin-bottom: 1.5rem;
-            margin-left: 30px;
-            color: #828282;
-            font-size: 12px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 500;
-            line-height: normal;
-            text-align: left;
-        }
-
-        #loginForm a {
-            position: fixed;
-            color: #2E2E2E;
-            font-size: 12px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            cursor: pointer;
-            text-align: left;
-            top: 92%; 
-        }
-
-        #loginForm button[type="button-enter"] {
-            position: fixed;
-            width: 22%;
-            height: 30px;
-            color: #FFFFFFFF;
-            font-size: 14px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            border: none;
-            border-radius: 4px;
-            background: #162741;
-            cursor: pointer;
-            top: 75%; 
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         #logo {
-            top: -10px;
-            width: 50px;
-            max-width: 80px;
-            margin-bottom: 10px;
-            margin-top: 0
+            display: block;
+            margin: 0 auto 20px;
+            width: 100px;
+        }
 
+        #dadosUsuario {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+
+        #mensagem {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #secaoBoletins {
+            display: none;
+            /* Oculta inicialmente a seção de boletins */
         }
     </style>
 </head>
 
 <body>
-    <div id="loginContainer">
-        <form id="loginForm">
+    <div id="loginContainer" class="container">
+        <form id="loginForm" class="form-group">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Simbolo_ISERJ.png" alt="Logo" id="logo">
-            <label for="usuario-txt">E-mail Institucional ou CPF:</label>
-            <input type="text" id="usuario" name="usuario" required>
-            <p>CPF: apenas os números</p><br>
-            <label for="senha-txt">Senha:</label>
-            <input type="password" id="senha" name="senha" required><br><br>
-            <a href="#" onclick="recuperarSenha()">esqueci a senha</a>
-            <button type="button-enter" onclick="realizarLogin()">Entrar</button>
+            <div class="form-group">
+                <label for="usuario">E-mail Institucional ou CPF:</label>
+                <input type="text" id="usuario" name="usuario" class="form-control" required>
+                <small class="form-text text-muted">CPF: apenas os números</small>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" class="form-control" required>
+            </div>
+
+            <a href="#" class="d-block mb-3" onclick="recuperarSenha()">Esqueci a senha</a>
+            <button type="button" class="btn btn-custom" onclick="realizarLogin()">Entrar</button>
+
+            <p id="mensagem"></p>
+
         </form>
     </div>
 
-    <div id="dadosUsuario">
+    <div id="dadosUsuario" class="container">
         <h2 id="nomeUsuario"></h2>
         <ul id="listaDocumentos"></ul>
+
+        <!-- Botões adicionais -->
+        <div class="mt-3">
+            <button class="btn btn-custom" onclick="mostrarBoletins()">Boletins</button>
+            <button class="btn btn-custom" onclick="mostrarInformacoes()">Informações</button>
+            <button class="btn btn-custom" onclick="mostrarDeclaracaoEscolar()">Declaração Escolar</button>
+            <button class="btn btn-custom" onclick="mostrarContato()">Contato</button>
+        </div>
     </div>
+
+    <!-- Seção de Boletins -->
+    <div id="secaoBoletins" class="container">
+        <h2>Boletins</h2>
+        <ul id="listaDocumentosBoletins"></ul> <!-- Lista para os documentos de boletins -->
+        <button class="btn btn-custom" onclick="voltarParaInicio()">Voltar</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
     <script>
         // Função para realizar o login na página index
         function realizarLogin() {
-            var usuario = document.getElementById("usuario").value; // Obtém o valor do campo de usuário
-            var senha = document.getElementById("senha").value; // Obtém o valor do campo de senha
+            console.log("Tentativa de login iniciada");
+            var usuario = document.getElementById("usuario").value;
+            var senha = document.getElementById("senha").value;
 
             // Fazer a requisição para a planilha usando a API do Google Sheets
-            fetch('https://sheets.googleapis.com/v4/spreadsheets/1Bz1yFGSxaLlvo6MNsiRdqcgNpDf7YbUS358S7lAV1-Y/values/A:D?key=AIzaSyB7anIj9Q08ueFQVQ6aevLttAkzJNNAGXs')
+            fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:D?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA')
                 .then(response => response.json()) // Converter a resposta para JSON
                 .then(data => {
                     var rows = data.values; // Obter as linhas da planilha
                     var loginSuccessful = false;
                     var nomeCompleto = "";
 
-                    // Verificar se as credenciais são válidas
-                    for (var i = 1; i < rows.length; i++) {
+                    // Verificar se as credenciais são válidas (procuar apartir da 3 linha da planilha)
+                    for (var i = 2; i < rows.length; i++) {
                         var row = rows[i];
-                        var storedEmail = row[0]; // A coluna A contém os e-mails na planilha
-                        var storedCPF = row[2]; // A coluna C contém os CPFs na planilha
-                        var storedSenha = row[1]; // A coluna B contém as senhas na planilha
-                        var storedNomeCompleto = row[3]; // A coluna D contém o nome completo na planilha
+                        var storedEmail = row[2]; // A coluna A contém os e-mails na planilha
+                        var storedCPF = row[1]; // A coluna C contém os CPFs na planilha
+                        var storedSenha = row[3]; // A coluna B contém as senhas na planilha
+                        var storedNomeCompleto = row[0]; // A coluna D contém o nome completo na planilha
 
                         if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
                             loginSuccessful = true; // Defina a variável como verdadeira se as credenciais coincidirem
@@ -172,53 +133,23 @@
                     }
 
                     if (loginSuccessful) {
-                        document.getElementById("loginContainer").style.display = "none"; // Oculta os campos de login
-                        document.getElementById("dadosUsuario").style.display = "block"; // Exibe os dados do usuário
-
-                        // Exibe o nome do usuário
-                        var nomeUsuario = nomeCompleto.split(" "); // Divide o nome completo em um array de palavras
-                        var primeiroNome = nomeUsuario[0]; // Obtém o primeiro nome
-                        var segundoNome = nomeUsuario[1]; // Obtém o segundo nome (se existir)
-
+                        document.getElementById("loginContainer").style.display = "none";
+                        document.getElementById("dadosUsuario").style.display = "block";
+                        var nomeUsuario = nomeCompleto.split(" ");
+                        var primeiroNome = nomeUsuario[0];
+                        var segundoNome = nomeUsuario[1];
                         document.getElementById("nomeUsuario").textContent = "Olá, " + primeiroNome + " " + segundoNome + "!";
 
-                        // Função para buscar e exibir os documentos do usuário
-                        function buscarDocumentosDoUsuario(nomeUsuario, folderId) {
-                            var url = "https://www.googleapis.com/drive/v3/files?q=name%20contains%20%27" + encodeURIComponent(nomeUsuario) + "%27%20and%20%27" + encodeURIComponent(folderId) + "%27%20in%20parents&key=AIzaSyDDBEKKqEsvTDb66TbmvtfZMb8wyStdnXk";
-
-                            fetch(url)
-                                .then(response => response.json())
-                                .then(data => {
-                                    var files = data.files;
-                                    var listaDocumentos = document.getElementById('listaDocumentos');
-                                    listaDocumentos.innerHTML = '';
-
-                                    if (files && files.length > 0) {
-                                        for (var i = 0; i < files.length; i++) {
-                                            var file = files[i];
-                                            var documentoNome = file.name;
-                                            var documentoId = file.id;
-                                            var documentoLink = "https://drive.google.com/file/d/" + documentoId;
-                                            var listItem = document.createElement('li');
-                                            var link = document.createElement('a');
-                                            link.href = documentoLink;
-                                            link.textContent = documentoNome;
-                                            listItem.appendChild(link);
-                                            listaDocumentos.appendChild(listItem);
-                                        }
-                                    } else {
-                                        document.getElementById("mensagem").textContent = 'Nenhum documento encontrado.';
-                                    }
-                                })
-                                .catch(error => {
-                                    console.log("Erro ao obter os dados do Google Drive: " + error);
-                                });
-                        }
 
                         // Chamar a função buscarDocumentosDoUsuario para exibir os documentos do usuário
                         buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
                     } else {
                         document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+
+                        // Recarregar a página após 2 segundos
+                        setTimeout(function () {
+                            location.reload(); // Recarregar a página
+                        }, 1000); // 2000ms = 2 segundos
                     }
                 })
                 .catch(error => {
@@ -228,8 +159,75 @@
 
         // Função para recuperar a senha
         function recuperarSenha() {
-            window.open("https://sites.google.com/view/testeiserj/recuperar-senha?authuser=0", "_blank"); // Redireciona para a página de recuperação de senha no Google Sites
+            window.open("./resetsenha.html", "_blank"); // Redireciona para o arquivo HTML local
+        }
+
+
+        // Função para mostrar a seção de boletins
+        function mostrarBoletins() {
+            document.getElementById("dadosUsuario").style.display = "none"; // Oculta os dados do usuário
+            document.getElementById("secaoBoletins").style.display = "block"; // Mostra a seção de boletins
+
+            var nomeCompleto = document.getElementById("nomeUsuario").textContent.split(", ")[1]; // Obter o nome completo
+            buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q'); // Chama a função para buscar documentos
+        }
+
+        // Função para buscar e exibir os documentos do usuário
+        function buscarDocumentosDoUsuario(nomeUsuario, folderId) {
+            var url = "https://www.googleapis.com/drive/v3/files?q=name%20contains%20%27" + encodeURIComponent(nomeUsuario) + "%27%20and%20%27" + encodeURIComponent(folderId) + "%27%20in%20parents&key=AIzaSyDDBEKKqEsvTDb66TbmvtfZMb8wyStdnXk";
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var files = data.files;
+                    var listaDocumentos = document.getElementById('listaDocumentosBoletins'); // Atualiza para usar a lista de boletins
+                    listaDocumentos.innerHTML = '';
+
+                    if (files && files.length > 0) {
+                        for (var i = 0; i < files.length; i++) {
+                            var file = files[i];
+                            var documentoNome = file.name;
+                            var documentoId = file.id;
+                            var documentoLink = "https://drive.google.com/file/d/" + documentoId;
+                            var listItem = document.createElement('li');
+                            var link = document.createElement('a');
+                            link.href = documentoLink;
+                            link.textContent = documentoNome;
+                            listItem.appendChild(link);
+                            listaDocumentos.appendChild(listItem);
+                        }
+                    } else {
+                        document.getElementById("mensagem").textContent = 'Nenhum documento encontrado.';
+                    }
+                })
+                .catch(error => {
+                    console.log("Erro ao obter os dados do Google Drive: " + error);
+                });
+        }
+
+        // Função para voltar à tela inicial
+        function voltarParaInicio() {
+            document.getElementById("secaoBoletins").style.display = "none"; // Oculta a seção de boletins
+            document.getElementById("dadosUsuario").style.display = "block"; // Mostra novamente os dados do usuário
+        }
+
+        // Funções para os outros botões (ainda não implementadas)
+        function mostrarInformacoes() {
+            alert('Aqui você pode adicionar informações!');
+        }
+
+        function mostrarDeclaracaoEscolar() {
+            alert('Aqui você pode adicionar declaração escolar!');
+        }
+
+        function mostrarContato() {
+            alert('Aqui você pode adicionar informações de contato!');
+        }
+
+        function recuperarSenha() {
+            alert('Aqui você pode implementar a recuperação de senha!');
         }
     </script>
 </body>
+
 </html>
