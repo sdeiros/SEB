@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Font Awesome -->
     <style>
         body {
             display: flex;
@@ -37,9 +36,8 @@
         .btn-custom {
             background-color: #007bff;
             color: white;
-            width: 100%;
+            width: 90%;
             margin-right: 10px;
-            /* Espaço entre os botões */
         }
 
         .btn-custom:hover {
@@ -53,7 +51,6 @@
 
         #secaoBoletins {
             display: none;
-            /* Oculta inicialmente a seção de boletins */
         }
 
         .icon-btn {
@@ -62,6 +59,25 @@
             color: #007bff;
             font-size: 24px;
             cursor: pointer;
+        }
+
+        /* Estilo responsivo para os botões */
+        @media (max-width: 576px) {
+            .botao-container {
+                display: flex;
+                justify-content: space-between;
+                flex-direction: column; /* Empilha os botões verticalmente em dispositivos móveis */
+            }
+            .botao-container .btn {
+                margin: 5px 0; /* Espaçamento entre os botões */
+            }
+        }
+
+        @media (min-width: 576px) {
+            .botao-container {
+                display: flex;
+                justify-content: space-between; /* Lado a lado em telas maiores */
+            }
         }
     </style>
 </head>
@@ -90,17 +106,21 @@
         </form>
     </div>
 
-    <div id="dadosUsuario" class="container">
+<div id="dadosUsuario" class="container">
         <h2 id="nomeUsuario"></h2>
-        <p id="matriculaData"></p> <!-- Adicionado para mostrar matrícula e data -->
+        <p id="matriculaData"></p>
         <ul id="listaDocumentos"></ul>
 
         <!-- Botões adicionais -->
-        <div class="mt-3 d-flex justify-content-between">
-            <button class="btn btn-custom" onclick="mostrarBoletins()">Boletins</button>
-            <button class="btn btn-custom" onclick="mostrarInformacoes()">Informações</button>
-            <button class="btn btn-custom" onclick="mostrarDeclaracaoEscolar()">Declaração Escolar</button>
-            <button class="btn btn-custom" onclick="mostrarContato()">Contato</button>
+        <div class="mt-3 botao-container">
+            <div>
+                <button class="btn btn-custom" onclick="mostrarBoletins()">Boletins</button>
+                <button class="btn btn-custom" onclick="mostrarInformacoes()">Informações</button>
+            </div>
+            <div>
+                <button class="btn btn-custom" onclick="mostrarDeclaracaoEscolar()">Declaração Escolar</button>
+                <button class="btn btn-custom" onclick="mostrarContato()">Contato</button>
+            </div>
         </div>
     </div>
 
@@ -128,9 +148,10 @@
             <li><strong>Mãe:</strong> <span id="infoMae"></span></li><br><br>
             <li><strong>Data de Nascimento:</strong> <span id="infoNascimento"></span></li>
             <li><strong>CPF:</strong> <span id="infoCPF"></span></li>
+<li><strong>Endereço:</strong> <span id="infoEndereco"></span></li>
+<li><strong>Contato:</strong> <span id="infoContato"></span></li>
         </ul>
     </div>
-
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -146,109 +167,92 @@
         var storedPai = "";
         var storedMae = "";
 
-        // Função para realizar o login na página index
-        function realizarLogin() {
-            var usuario = document.getElementById("usuario").value; // Obtém o valor do campo de usuário
-            var senha = document.getElementById("senha").value; // Obtém o valor do campo de senha
+// Função para formatar o CPF (XXX.XXX.XXX-XX)
+function formatarCPF(cpf) {
+    // Remove tudo que não for dígito
+    cpf = cpf.replace(/\D/g, "");
+    // Aplica a máscara no CPF
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
 
-            // Fazer a requisição para a planilha usando a API do Google Sheets
-            fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:I?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA')
-                .then(response => response.json()) // Converter a resposta para JSON
-                .then(data => {
-                    var rows = data.values; // Obter as linhas da planilha
+// Função para realizar o login
+function realizarLogin() {
+    var usuario = document.getElementById("usuario").value;
+    var senha = document.getElementById("senha").value;
 
-                    // Adicione um log para verificar a estrutura da resposta
-                    console.log('Dados retornados:', data);
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA')
+        .then(response => response.json())
+        .then(data => {
+            var rows = data.values;
 
-                    var loginSuccessful = false;
-                    var nomeCompleto = "";
-                    var matricula = "";
+            var loginSuccessful = false;
+            var nomeCompleto = "";
+            var matricula = "";
 
-                    // Verificar se as credenciais são válidas (procurar a partir da 3ª linha da planilha)
-                    for (var i = 2; i < rows.length; i++) {
-                        var row = rows[i];
-                        
-                        // Verifica se a linha possui colunas suficientes
-                        if (row.length < 9) {
-                            console.error(`Linha ${i} não possui colunas suficientes. Tamanho da linha: ${row.length}`);
-                            continue; // Pula para a próxima linha
-                        }
+            for (var i = 2; i < rows.length; i++) {
+                var row = rows[i];
+                if (row.length < 9) continue;
 
-                        var storedEmail = row[2]; // A coluna C contém os e-mails
-                        var storedCPF = row[1]; // A coluna B contém os CPFs
-                        var storedSenha = row[10]; // A coluna I contém as senhas
-                        var storedNomeCompleto = row[0]; // A coluna A contém o nome completo
-                        storedMatricula = row[3]; // A coluna D contém a matrícula
-                        storedTurma = row[4]; // A coluna E contém a turma
-                        storedNascimento = row[5]; // A coluna F contém a data de nascimento
-                        storedPai = row[6]; // A coluna G contém o nome do pai
-                        storedMae = row[7]; // A coluna H contém o nome da mãe
+                var storedEmail = row[2];
+                var storedCPF = row[1]; 
+                var storedSenha = row[10]; 
+                var storedNomeCompleto = row[0]; 
+var storedEndereco = row[8]; // A coluna I contém o endereço
+var storedContato = row[9]; // A coluna J contém o contato
+                storedMatricula = row[3]; 
+                storedTurma = row[4]; 
+                storedNascimento = row[5]; 
+                storedPai = row[6]; 
+                storedMae = row[7]; 
 
-                        // Verifica as credenciais
-                        if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
-                            loginSuccessful = true;
-                            nomeCompleto = storedNomeCompleto;
-                            matricula = storedMatricula; // Atribui a matrícula correta
-                            break;
-                        }
-                    }
+                if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+                    loginSuccessful = true;
+                    nomeCompleto = storedNomeCompleto;
+                    matricula = storedMatricula;
+                    break;
+                }
+            }
 
-                    if (loginSuccessful) {
-                        document.getElementById("loginContainer").style.display = "none";
-                        document.getElementById("dadosUsuario").style.display = "block";
-                        var nomeUsuario = nomeCompleto.split(" ");
-                        var primeiroNome = nomeUsuario[0];
-                        var segundoNome = nomeUsuario[1];
+            if (loginSuccessful) {
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("dadosUsuario").style.display = "block";
 
-                        // Obtém a hora atual para definir a saudação
-                        var horaAtual = new Date().getHours();
-                        var saudacao;
+                var nomeUsuario = nomeCompleto.split(" ");
+                var primeiroNome = nomeUsuario[0];
+                var segundoNome = nomeUsuario[1];
 
-                        if (horaAtual < 12) {
-                            saudacao = "Bom dia,";
-                        } else if (horaAtual < 18) {
-                            saudacao = "Boa tarde,";
-                        } else {
-                            saudacao = "Boa noite,";
-                        }
+                var horaAtual = new Date().getHours();
+                var saudacao = horaAtual < 12 ? "Bom Dia," : (horaAtual < 18 ? "Boa Tarde," : "Boa Noite,");
 
-                        // Formata a data de hoje
-                        var hoje = new Date();
-                        var dia = String(hoje.getDate()).padStart(2, '0');
-                        var mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                        var ano = hoje.getFullYear();
+                var hoje = new Date();
+                var dia = String(hoje.getDate()).padStart(2, '0');
+                var mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                var ano = hoje.getFullYear();
 
-                        // Converte a matrícula para string, se necessário
-                        matricula = matricula ? matricula.toString() : "N/A";
+                document.getElementById("nomeUsuario").innerHTML = saudacao + "<br>" + primeiroNome + " " + segundoNome + "!";
+                document.getElementById("matriculaData").innerHTML = "<em>" + matricula + "</em> • <em>" + dia + "/" + mes + "/" + ano + "</em>";
 
-                        document.getElementById("nomeUsuario").textContent = saudacao + " " + primeiroNome + " " + segundoNome + "!";
-                        document.getElementById("matriculaData").innerHTML = "<em>" + matricula + "</em> • <em>" + dia + "/" + mes + "/" + ano + "</em>";
+                // Preencher a seção de "Informações"
+                document.getElementById("infoNomeCompleto").textContent = nomeCompleto;
+                document.getElementById("infoCPF").textContent = formatarCPF(storedCPF); // Aplica a formatação ao CPF
+                document.getElementById("infoMatricula").textContent = storedMatricula;
+                document.getElementById("infoTurma").textContent = storedTurma;
+                document.getElementById("infoNascimento").textContent = storedNascimento;
+                document.getElementById("infoPai").textContent = storedPai;
+                document.getElementById("infoMae").textContent = storedMae;
 
-                        // Preencher a seção de "Informações"
-                        document.getElementById("infoNomeCompleto").textContent = nomeCompleto; // Adiciona o nome completo
-                        document.getElementById("infoCPF").textContent = storedCPF; // Adiciona o CPF
-                        document.getElementById("infoMatricula").textContent = storedMatricula;
-                        document.getElementById("infoTurma").textContent = storedTurma;
-                        document.getElementById("infoNascimento").textContent = storedNascimento;
-                        document.getElementById("infoPai").textContent = storedPai;
-                        document.getElementById("infoMae").textContent = storedMae;
+document.getElementById("infoEndereco").textContent = storedEndereco; // Preenche o endereço
+                document.getElementById("infoContato").textContent = storedContato; // Preenche o contato
 
-                        // Chamar a função buscarDocumentosDoUsuario para exibir os documentos do usuário
-                        buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
-                    } else {
-                        document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
-
-                        // Recarregar a página após 2 segundos
-                        //setTimeout(function () {
-                        //location.reload(); // Recarregar a página
-                        //  }, //1000); // 2000ms = 2 segundos
-                    }
-
-                })
-                .catch(error => {
-                    console.log("Erro ao acessar a planilha:", error);
-                });
-        }
+                buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
+            } else {
+                document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+            }
+        })
+        .catch(error => {
+            console.log("Erro ao acessar a planilha:", error);
+        });
+}
 
         function togglePassword() {
             var senha = document.getElementById("senha");
