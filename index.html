@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Tela Principal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +19,7 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+width: 100%;
         }
 
         #logo {
@@ -31,6 +31,7 @@
         #dadosUsuario {
             display: none;
             margin-top: 20px;
+width: 100%;
         }
 
         .btn-custom {
@@ -51,6 +52,11 @@
 
         #secaoBoletins {
             display: none;
+        }
+
+/* Seções ocultas */
+        #secaoBoletins, #secaoInformacoes, #secaoNotificacoes {
+            display: none; /* Inicialmente oculto */
         }
 
         .icon-btn {
@@ -81,7 +87,6 @@
         }
     </style>
 </head>
-
 <body>
     <div id="loginContainer" class="container">
         <form id="loginForm" class="form-group">
@@ -91,51 +96,47 @@
                 <input type="text" id="usuario" name="usuario" class="form-control" required>
                 <small class="form-text text-muted">CPF: apenas os números</small>
             </div>
-
             <div class="form-group">
                 <label for="senha">Senha:</label>
                 <input type="password" id="senha" name="senha" class="form-control" required>
                 <input type="checkbox" onclick="togglePassword()"> Mostrar Senha
             </div>
-
             <a href="#" class="d-block mb-3" onclick="recuperarSenha()">Esqueci a senha</a>
             <button type="button" class="btn btn-custom" onclick="realizarLogin()">Entrar</button>
-
             <p id="mensagem"></p>
-
         </form>
     </div>
-
-<div id="dadosUsuario" class="container">
+    <!-- Dados do Usuário -->
+    <div id="dadosUsuario" class="container">
         <h2 id="nomeUsuario"></h2>
         <p id="matriculaData"></p>
         <ul id="listaDocumentos"></ul>
-
-        <!-- Botões adicionais -->
-        <div class="mt-3 botao-container">
-            <div>
-                <button class="btn btn-custom" onclick="mostrarBoletins()">Boletins</button>
-                <button class="btn btn-custom" onclick="mostrarInformacoes()">Informações</button>
-            </div>
-            <div>
-                <button class="btn btn-custom" onclick="mostrarDeclaracaoEscolar()">Declaração Escolar</button>
-                <button class="btn btn-custom" onclick="mostrarContato()">Contato</button>
-            </div>
+       
+ <!-- Botões adicionais -->
+        <div id="botaoSecao" class="mt-3 botao-container">
+            <button class="btn btn-custom" onclick="mostrarBoletins()">Boletins</button>
+            <button class="btn btn-custom" onclick="mostrarInformacoes()">Informações</button>
+            <button class="btn btn-custom" onclick="mostrarDeclaracaoEscolar()">Declaração Escolar</button>
+            <button class="btn btn-custom" onclick="mostrarContato()">Contato</button>
         </div>
+
+<div id="secaoNotificacoes" style="display: none;">
+    <h3>Enviar Notificação</h3>
+    <textarea id="mensagemNotificacao" placeholder="Escreva a notificação aqui"></textarea>
+    <button onclick="enviarNotificacao()">Enviar Notificação</button>
+</div>
+</div>
+
     </div>
-
-
-    <!-- Seção de Boletins -->
+    <!-- Seções ocultas -->
     <div id="secaoBoletins" class="container">
         <button class="icon-btn" onclick="voltarParaInicio()">
             <i class="fas fa-arrow-left"></i>
         </button>
         <h2>Boletins</h2>
-        <ul id="listaDocumentosBoletins"></ul> <!-- Lista para os documentos de boletins -->
+        <ul id="listaDocumentosBoletins"></ul>
     </div>
-
-
-    <div id="secaoInformacoes" class="container" style="display: none;">
+    <div id="secaoInformacoes" class="container">
         <button class="icon-btn" onclick="voltarParaInicio()">
             <i class="fas fa-arrow-left"></i>
         </button>
@@ -143,15 +144,17 @@
         <ul>
             <li><strong>Nome Completo:</strong> <span id="infoNomeCompleto"></span></li>
             <li><strong>Matrícula:</strong> <span id="infoMatricula"></span></li>
-            <li><strong>Turma:</strong> <span id="infoTurma"></span></li><br><br>
+            <li><strong>Turma:</strong> <span id="infoTurma"></span></li>
             <li><strong>Pai:</strong> <span id="infoPai"></span></li>
-            <li><strong>Mãe:</strong> <span id="infoMae"></span></li><br><br>
+            <li><strong>Mãe:</strong> <span id="infoMae"></span></li>
             <li><strong>Data de Nascimento:</strong> <span id="infoNascimento"></span></li>
             <li><strong>CPF:</strong> <span id="infoCPF"></span></li>
-<li><strong>Endereço:</strong> <span id="infoEndereco"></span></li>
-<li><strong>Contato:</strong> <span id="infoContato"></span></li>
+            <li><strong>Endereço:</strong> <span id="infoEndereco"></span></li>
+            <li><strong>Contato:</strong> <span id="infoContato"></span></li>
         </ul>
     </div>
+   
+
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -160,98 +163,137 @@
 
 
     <script>
-        // Variáveis globais para armazenar as informações do usuário
-        var storedMatricula = "";
-        var storedTurma = "";
-        var storedNascimento = "";
-        var storedPai = "";
-        var storedMae = "";
-
-// Função para formatar o CPF (XXX.XXX.XXX-XX)
-function formatarCPF(cpf) {
-    // Remove tudo que não for dígito
-    cpf = cpf.replace(/\D/g, "");
-    // Aplica a máscara no CPF
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-}
+// Variáveis globais para armazenar as informações do usuário
+var storedMatricula = "";
+var storedTurma = "";
+var storedNascimento = "";
+var storedPai = "";
+var storedMae = "";
+var isSecretaria = false; // Para controlar se o login é de secretaria
 
 // Função para realizar o login
-function realizarLogin() {
+async function realizarLogin() {
     var usuario = document.getElementById("usuario").value;
     var senha = document.getElementById("senha").value;
 
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA')
-        .then(response => response.json())
-        .then(data => {
-            var rows = data.values;
+    try {
+        // Chama a API do Google Sheets para pegar os dados da aba de Alunos
+        let responseAlunos = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
+        let dataAlunos = await responseAlunos.json();
+        var rowsAlunos = dataAlunos.values;
 
-            var loginSuccessful = false;
-            var nomeCompleto = "";
-            var matricula = "";
+        var loginSuccessful = false;
+        var nomeCompleto = "";
+        var matricula = "";
+        var storedCPF = "";
 
-            for (var i = 2; i < rows.length; i++) {
-                var row = rows[i];
-                if (row.length < 9) continue;
+        // Verifica o login na aba de Alunos
+        for (var i = 2; i < rowsAlunos.length; i++) {
+            var row = rowsAlunos[i];
+            if (row.length < 9) continue;
 
-                var storedEmail = row[2];
-                var storedCPF = row[1]; 
-                var storedSenha = row[10]; 
-                var storedNomeCompleto = row[0]; 
-var storedEndereco = row[8]; // A coluna I contém o endereço
+            var storedEmail = row[2];
+            storedCPF = row[1]; 
+            var storedSenha = row[10]; 
+            var storedNomeCompleto = row[0]; 
+            var storedEndereco = row[8]; // A coluna I contém o endereço
 var storedContato = row[9]; // A coluna J contém o contato
-                storedMatricula = row[3]; 
-                storedTurma = row[4]; 
-                storedNascimento = row[5]; 
-                storedPai = row[6]; 
-                storedMae = row[7]; 
+            storedMatricula = row[3]; 
+            storedTurma = row[4]; 
+            storedNascimento = row[5]; 
+            storedPai = row[6]; 
+            storedMae = row[7]; 
 
-                if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+            if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+                loginSuccessful = true;
+                nomeCompleto = storedNomeCompleto;
+                matricula = storedMatricula;
+                break;
+            }
+        }
+
+        // Se não encontrou na aba de Alunos, verifica na aba de Secretaria
+        if (!loginSuccessful) {
+            let responseSecretaria = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Secretaria?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
+            let dataSecretaria = await responseSecretaria.json();
+            var rowsSecretaria = dataSecretaria.values;
+
+            for (var i = 2; i < rowsSecretaria.length; i++) {
+                var row = rowsSecretaria[i];
+                if (row.length < 3) continue;
+
+                var storedEmail = row[1]; // Supondo que o e-mail está na segunda coluna
+                var storedSenha = row[2]; // Supondo que a senha está na terceira coluna
+                var storedNomeCompleto = row[0]; // Supondo que o nome completo está na primeira coluna
+
+                if (usuario === storedEmail && senha === storedSenha) {
                     loginSuccessful = true;
                     nomeCompleto = storedNomeCompleto;
-                    matricula = storedMatricula;
+                    isSecretaria = true; // Marca como login da secretaria
                     break;
                 }
             }
+        }
 
-            if (loginSuccessful) {
-                document.getElementById("loginContainer").style.display = "none";
-                document.getElementById("dadosUsuario").style.display = "block";
+        // Processa o login (se for aluno ou secretaria)
+        if (loginSuccessful) {
+            processarLogin(nomeCompleto, matricula, storedCPF);
+        } else {
+            document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
+        }
 
-                var nomeUsuario = nomeCompleto.split(" ");
-                var primeiroNome = nomeUsuario[0];
-                var segundoNome = nomeUsuario[1];
+    } catch (error) {
+        console.error("Erro ao realizar login:", error);
+        document.getElementById("mensagem").textContent = "Erro ao realizar login. Tente novamente mais tarde.";
+    }
+}
 
-                var horaAtual = new Date().getHours();
-                var saudacao = horaAtual < 12 ? "Bom Dia," : (horaAtual < 18 ? "Boa Tarde," : "Boa Noite,");
+/// Função para processar o login e exibir as informações corretas
+function processarLogin(nomeCompleto, matricula, storedCPF) {
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("dadosUsuario").style.display = "block";
 
-                var hoje = new Date();
-                var dia = String(hoje.getDate()).padStart(2, '0');
-                var mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                var ano = hoje.getFullYear();
+    var nomeUsuario = nomeCompleto.split(" ");
+    var primeiroNome = nomeUsuario[0];
+    var segundoNome = nomeUsuario.length > 1 ? nomeUsuario[1] : ""; // Evita undefined
 
-                document.getElementById("nomeUsuario").innerHTML = saudacao + "<br>" + primeiroNome + " " + segundoNome + "!";
-                document.getElementById("matriculaData").innerHTML = "<em>" + matricula + "</em> • <em>" + dia + "/" + mes + "/" + ano + "</em>";
+    var horaAtual = new Date().getHours();
+    var saudacao = horaAtual < 12 ? "Bom Dia," : (horaAtual < 18 ? "Boa Tarde," : "Boa Noite,");
 
-                // Preencher a seção de "Informações"
-                document.getElementById("infoNomeCompleto").textContent = nomeCompleto;
-                document.getElementById("infoCPF").textContent = formatarCPF(storedCPF); // Aplica a formatação ao CPF
-                document.getElementById("infoMatricula").textContent = storedMatricula;
-                document.getElementById("infoTurma").textContent = storedTurma;
-                document.getElementById("infoNascimento").textContent = storedNascimento;
-                document.getElementById("infoPai").textContent = storedPai;
-                document.getElementById("infoMae").textContent = storedMae;
+    var hoje = new Date();
+    var dia = String(hoje.getDate()).padStart(2, '0');
+    var mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    var ano = hoje.getFullYear();
 
-document.getElementById("infoEndereco").textContent = storedEndereco; // Preenche o endereço
-                document.getElementById("infoContato").textContent = storedContato; // Preenche o contato
+    var nomeExibido = segundoNome ? primeiroNome + " " + segundoNome : primeiroNome;
+    document.getElementById("nomeUsuario").innerHTML = saudacao + "<br>" + nomeExibido + "!";
+    document.getElementById("matriculaData").innerHTML = "<em>" + matricula + "</em> • <em>" + dia + "/" + mes + "/" + ano + "</em>";
 
-                buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
-            } else {
-                document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
-            }
-        })
-        .catch(error => {
-            console.log("Erro ao acessar a planilha:", error);
-        });
+    // Preencher a seção de "Informações"
+    document.getElementById("infoNomeCompleto").textContent = nomeCompleto;
+    document.getElementById("infoCPF").textContent = formatarCPF(storedCPF); // Aplica a formatação ao CPF
+    document.getElementById("infoMatricula").textContent = storedMatricula;
+    document.getElementById("infoTurma").textContent = storedTurma;
+    document.getElementById("infoPai").textContent = storedPai;
+    document.getElementById("infoMae").textContent = storedMae;
+
+    // Mostra a seção de notificações se o usuário for da secretaria
+    if (isSecretaria) { document.getElementById("botaoSecao").style.display = "none";
+        document.getElementById("secaoNotificacoes").style.display = "block";
+    } else {
+        // Se for aluno, mostrar os botões de boletins e informações e esconder a seção de notificações
+        document.getElementById("btnBoletins").style.display = "block";
+        document.getElementById("btnInformacoes").style.display = "block";
+
+        // Esconder a seção de notificações, pois não é relevante para alunos
+        document.getElementById("secaoNotificacoes").style.display = "none";
+    }
+}
+
+// Função para formatar o CPF
+function formatarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ''); // Remove qualquer caractere não numérico
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"); // Formato xxx.xxx.xxx-xx
 }
 
         function togglePassword() {
@@ -332,6 +374,7 @@ document.getElementById("infoEndereco").textContent = storedEndereco; // Preench
             alert('Aqui você pode implementar a recuperação de senha!');
         }
     </script>
+
 </body>
 
 </html>
