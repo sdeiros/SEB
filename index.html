@@ -176,151 +176,135 @@
         var storedContato = "";
         var isSecretaria = false; // Para controlar se o login é de secretaria
 
-        // Função para realizar o login
-        async function realizarLogin() {
-            var usuario = document.getElementById("usuario").value;
-            var senha = document.getElementById("senha").value;
 
-            try {
-                // Chama a API do Google Sheets para pegar os dados da aba de Alunos
-                let responseAlunos = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
-                let dataAlunos = await responseAlunos.json();
-                var rowsAlunos = dataAlunos.values;
+// Função para realizar o login
+async function realizarLogin() {
+    var usuario = document.getElementById("usuario").value;
+    var senha = document.getElementById("senha").value;
 
-                var loginSuccessful = false;
-                var nomeCompleto = "";
-                var matricula = "";
-                var storedCPF = "";
+    try {
+        // Verifica na aba Alunos
+        let responseAlunos = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Alunos!A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
+        let dataAlunos = await responseAlunos.json();
+        var rowsAlunos = dataAlunos.values;
 
-                // Verifica o login na aba de Alunos
-                for (var i = 2; i < rowsAlunos.length; i++) {
-                    var row = rowsAlunos[i];
-                    if (row.length < 9) continue;
+        var loginSuccessful = false;
+        var nomeCompleto = "";
+        var matricula = "";
+        var storedCPF = "";
 
-                    var storedEmail = row[2];
-                    storedCPF = row[1];
-                    var storedSenha = row[10];
-                    var storedNomeCompleto = row[0];
-                    storedEndereco = row[8]; // A coluna I contém o endereço
-                    storedContato = row[9]; // A coluna J contém o contato
-                    storedMatricula = row[3];
-                    storedTurma = row[4];
-                    storedNascimento = row[5];
-                    storedPai = row[6];
-                    storedMae = row[7];
+        // Verificação na aba de Alunos
+        for (var i = 2; i < rowsAlunos.length; i++) {
+            var row = rowsAlunos[i];
+            if (row.length < 9) continue;
 
-                    if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
-                        loginSuccessful = true;
-                        nomeCompleto = storedNomeCompleto;
-                        matricula = storedMatricula;
-                        break;
-                    }
-                }
+            var storedEmail = row[2];
+            storedCPF = row[1];
+            var storedSenha = row[10];
+            var storedNomeCompleto = row[0];
 
-                // Se não encontrou na aba de Alunos, verifica na aba de Secretaria
-                if (!loginSuccessful) {
-                    let responseSecretaria = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Secretaria?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
-                    let dataSecretaria = await responseSecretaria.json();
-                    var rowsSecretaria = dataSecretaria.values;
-
-                    for (var i = 2; i < rowsSecretaria.length; i++) {
-                        var row = rowsSecretaria[i];
-                        if (row.length < 3) continue;
-
-                        var storedEmail = row[1]; // Supondo que o e-mail está na segunda coluna
-                        var storedSenha = row[2]; // Supondo que a senha está na terceira coluna
-                        var storedNomeCompleto = row[0]; // Supondo que o nome completo está na primeira coluna
-
-                        if (usuario === storedEmail && senha === storedSenha) {
-                            loginSuccessful = true;
-                            nomeCompleto = storedNomeCompleto;
-                            isSecretaria = true; // Marca como login da secretaria
-                            break;
-                        }
-                    }
-                }
-
-                // Aqui você pode adicionar o código para tratar o sucesso ou falha do login
-                if (loginSuccessful) {
-                    document.getElementById("nomeUsuario").textContent = nomeCompleto + ", Matrícula: " + matricula;
-                    document.getElementById("dadosUsuario").style.display = "block"; // Mostra os dados do usuário
-                    document.getElementById('loginContainer').style.display = 'none';
-
-                    if (isSecretaria) {
-                        // Ocultar o formulário de login
-                        document.getElementById('loginContainer').style.display = 'none';
-
-                        // Ocultar botões de seção se necessário
-                        document.getElementById('botaoSecao').style.display = 'none';
-
-                        // Exibir o formulário de notificações
-                        document.getElementById('secaoNotificacoes').style.display = 'block';
-                    } else {
-                        console.log("Usuário é aluno");
-                        // Exibe os botões de aluno
-                        document.getElementById("botaoSecao").style.display = "block";
-
-                        document.getElementById('loginContainer').style.display = 'none';
-
-                        // Se for aluno, mostrar os botões de boletins e informações e esconder a seção de notificações
-                        document.getElementById("btnBoletins").style.display = "block";
-                        document.getElementById("btnInformacoes").style.display = "block";
-                        document.getElementById("secaoNotificacoes").style.display = "none";
-                    }
-
-                    // Chamar a função para buscar os documentos do usuário (boletins)
-                    buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q');
-
-                } else {
-                    document.getElementById("mensagem").textContent = "Usuário ou senha incorretos!";
-                }
-
-            } catch (error) {
-                console.log("Erro ao acessar a planilha:", error);
+            if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+                loginSuccessful = true;
+                nomeCompleto = storedNomeCompleto;
+                matricula = row[3];
+                isSecretaria = false; // Login como aluno
+                break;
             }
         }
+
+        // Se o login falhar na aba de Alunos, tenta a aba de Secretaria
+        if (!loginSuccessful) {
+            let responseSecretaria = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Secretaria!A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
+            let dataSecretaria = await responseSecretaria.json();
+            var rowsSecretaria = dataSecretaria.values;
+
+            // Verificação na aba de Secretaria
+            for (var i = 2; i < rowsSecretaria.length; i++) {
+                var row = rowsSecretaria[i];
+                if (row.length < 9) continue;
+
+                var storedEmail = row[2];
+                storedCPF = row[1];
+                var storedSenha = row[10];
+                var storedNomeCompleto = row[0];
+
+                if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
+                    loginSuccessful = true;
+                    nomeCompleto = storedNomeCompleto;
+                    isSecretaria = true; // Login como secretaria
+                    break;
+                }
+            }
+        }
+
+        if (loginSuccessful) {
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("dadosUsuario").style.display = "block";
+
+            var nomeUsuario = nomeCompleto.split(" ");
+            document.getElementById("nomeUsuario").textContent = "Olá, " + nomeUsuario[0] + "!";
+
+            // Exibe informações e opções conforme o tipo de usuário
+            if (isSecretaria) {
+                document.getElementById("secaoNotificacoes").style.display = "block";
+                
+                document.getElementById("botaoSecao").style.display = "none";
+                
+                
+                console.log("Login realizado com sucesso como secretaria");
+            } else {
+                document.getElementById("botaoSecao").style.display = "block";
+                console.log("Login realizado com sucesso como aluno");
+            }
+        } else {
+            document.getElementById("mensagem").textContent = "Usuário ou senha inválidos!";
+        }
+    } catch (error) {
+        console.error("Erro ao realizar login:", error);
+    }
+}
 
 
         // Função para buscar e exibir os documentos do usuário (boletins)
         function buscarDocumentosDoUsuario(nomeUsuario, folderId) {
-            var url = "https://www.googleapis.com/drive/v3/files?q=name%20contains%20%27" + encodeURIComponent(nomeUsuario) + "%27%20and%20%27" + encodeURIComponent(folderId) + "%27%20in%20parents&key=AIzaSyDDBEKKqEsvTDb66TbmvtfZMb8wyStdnXk";
+    var url = "https://www.googleapis.com/drive/v3/files?q=name%20contains%20%27" + encodeURIComponent(nomeUsuario) + "%27%20and%20%27" + encodeURIComponent(folderId) + "%27%20in%20parents&key=AIzaSyDDBEKKqEsvTDb66TbmvtfZMb8wyStdnXk";
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    var files = data.files;
-                    var listaDocumentos = document.getElementById('listaDocumentosBoletins'); // Atualiza para usar a lista de boletins
-                    listaDocumentos.innerHTML = '';
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            var files = data.files;
+            var listaDocumentos = document.getElementById('listaDocumentosBoletins'); // Atualiza para usar a lista de boletins
+            listaDocumentos.innerHTML = '';
 
-                    if (files && files.length > 0) {
-                        for (var i = 0; i < files.length; i++) {
-                            var file = files[i];
-                            var documentoNome = file.name;
-                            var documentoId = file.id;
-                            var documentoLink = "https://drive.google.com/file/d/" + documentoId;
-                            var listItem = document.createElement('li');
-                            var link = document.createElement('a');
-                            link.href = documentoLink;
-                            link.textContent = documentoNome;
-                            listItem.appendChild(link);
-                            listaDocumentos.appendChild(listItem);
-                        }
-                    } else {
-                        document.getElementById("mensagem").textContent = 'Nenhum documento encontrado.';
-                    }
-                })
-                .catch(error => {
-                    console.log("Erro ao obter os dados do Google Drive: " + error);
-                });
-        }
+            if (files && files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var documentoNome = file.name;
+                    var documentoId = file.id;
+                    var documentoLink = "https://drive.google.com/file/d/" + documentoId;
+                    var listItem = document.createElement('li');
+                    var link = document.createElement('a');
+                    link.href = documentoLink;
+                    link.textContent = documentoNome;
+                    listItem.appendChild(link);
+                    listaDocumentos.appendChild(listItem);
+                }
+            } else {
+                document.getElementById("mensagem").textContent = 'Nenhum documento encontrado.';
+            }
+        })
+        .catch(error => {
+            console.log("Erro ao obter os dados do Google Drive: " + error);
+        });
+}
 
         // Função para mostrar os boletins
         function mostrarBoletins() {
             document.getElementById("dadosUsuario").style.display = "none"; // Oculta os dados do usuário
             document.getElementById("secaoBoletins").style.display = "block"; // Mostra a seção de boletins
 
-            var nomeCompleto = storedMatricula; // Exemplo, você pode mudar para usar a variável que contém o nome do aluno
-            buscarDocumentosDoUsuario(nomeCompleto, "ID_DA_PASTA_DE_BOLETINS"); // Altere para o ID correto
+            var nomeCompleto = document.getElementById("nomeUsuario").textContent.split(", ")[1]; // Obter o nome completo
+            buscarDocumentosDoUsuario(nomeCompleto, '1HBQi31Er40Nni8uaDzFwUHLl-iirdB-q'); // Chama a função para buscar documentos
         }
 
         // Função para alternar a visibilidade da senha
