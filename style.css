@@ -1,0 +1,283 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Helvetica Now Display';
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    overflow-x: hidden;
+}
+
+::selection {
+  background-color: rgba(224, 224, 224, 0.9);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+
+    
+    text-transform: none;
+
+    line-break: auto;
+    overflow-wrap: initial;
+    caret-color: rgba(39, 39, 39, 1);
+    text-decoration: none;
+    letter-spacing: 0px;
+    font-size: 1.4rem;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.nav-center {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.nav-right {
+    position: absolute;
+    text-align: right;
+    text-decoration: none;
+    left: 90%;
+}
+
+.linha {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    width: 96%;
+    height: 1.5rem;
+    background: #272727;
+    transform: translateX(-50%);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.circles {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 1.3rem;
+}
+
+.circle {
+    position: absolute;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.circle.black {
+    background-color: black;
+    left: -20%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.circle.white {
+    background-color: white;
+    left: 70%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid black;
+}
+
+main h1 {
+    width: 82%;
+    margin-left: 2.5rem;
+    margin-top: 9rem;
+
+    position: relative;
+    text-transform: none;
+    line-break: auto;
+    overflow-wrap: initial;
+    color: rgba(39, 39, 39, 1);
+    text-decoration: none;
+    font-size: 7rem;
+    font-style: normal;
+    font-weight: 900;
+    text-align: left;
+    line-height: 7.5rem;
+}
+
+.carousel-container {
+    width: 100%;
+    margin-top: 14%;
+    margin-bottom: 2%;
+    box-sizing: border-box;
+}
+
+.swiper-container {
+    width: 100%;
+    padding: 0;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: -4%;
+    box-sizing: border-box;
+    transition: transform 0.5s ease;
+}
+
+.swiper-slide:last-child {
+    margin-right: 0;
+}
+
+/* área de informações */
+.work-info {
+    position: absolute;
+    bottom: 0;
+    color: white;
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.work-info h2 {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin: 0;
+    font-size: 1.8rem;
+    text-align: left;
+    font-weight: 300;
+    line-height: 2rem;
+}
+
+.work-info .tags {
+    display: flex;
+    gap: 1rem;
+    /* Espaçamento entre os "botões" */
+}
+
+.work-info p {
+  z-index: 2;
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid white;
+    border-radius: 0.5rem;
+    /* Arredonda as bordas para parecer um botão */
+    white-space: nowrap;
+    /* Garante que o texto fique em uma linha */
+}
+
+
+.work-info-end {
+    position: absolute;
+    bottom: 0;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 2.5rem;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+/* espaçamento inferior dos cards */
+.work-card {
+    display: block;
+    text-decoration: none;
+    color: black;
+    border-radius: 1rem;
+    overflow: hidden;
+    width: 26rem;
+    height: 42rem;
+    position: relative;
+}
+
+.work-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0));
+    z-index: 1;
+}
+
+.work-card img {
+    position: relative;
+    z-index: 0;
+}
+
+.work-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: rgb(0, 0, 0);
+    opacity: 0.8;
+    transition: color 0.3s ease;
+    z-index: 10;
+    margin-top: 45%;
+}
+
+/* botão esquerdo */
+.swiper-button-prev {
+    color: white;
+}
+
+/* botão esquerdo quando a classe 'black' é adicionada */
+.swiper-button-prev.black {
+    color: black;
+}
+
+#sobre-mim {
+    max-width: 90%;
+    margin-left: 2rem;
+    margin-top: 3rem;
+}
+
+#sobre-mim p {
+    font-size: 1.4rem; /* Fonte de tamanho padrão */
+    font-weight: 500;
+    color: #333; /* Texto em um tom escuro, mas suave */
+}
+
+.botao-link {
+    display: inline-block; /* Para que o link se comporte como um botão */
+    padding: 2px 3px; /* Espaçamento interno */
+    border: 1px solid black; /* Borda ao redor */
+    border-radius: 5px; /* Deixa os cantos arredondados */
+    text-decoration: none; /* Remove o sublinhado do link */
+    color: #333; /* Texto em um tom escuro, mas suave */
+    transition: background-color 0.3s ease; /* Suaviza o efeito ao passar o mouse */
+    font-size: 1.3rem;
+}
+
+.botao-link:hover {
+    background-color: #f0f0f0; /* Cor de fundo ao passar o mouse */
+}
+
+.container-h1 {
+    position: relative;
+    height: 30rem; /* Ajuste conforme necessário */
+    overflow: hidden; /* Importante para o efeito de 'emergir' */
+}
+
+.h1-wrapper {
+    position: relative;
+}
+
+.word {
+    display: inline-block; /* Para que cada palavra seja tratada como um bloco individual */
+}
+
