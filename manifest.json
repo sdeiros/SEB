@@ -1,0 +1,41 @@
+{
+    "name": "ISERJ | Portal do Aluno",
+    "short_name": "ISERJ",
+    "description": "Portal dos Alunos ISERJ/SEB",
+    "start_url": "/index.html",
+    "id": "/index.html",
+    "icons": [
+      {
+        "src": "assets/icon-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "screenshots": [
+      {
+        "src": "assets/screenshot-wide.png",
+        "sizes": "573x320",
+        "type": "image/png",
+        "form_factor": "wide"
+      },
+      {
+        "src": "assets/screenshot-mobile.png",
+        "sizes": "476x639",
+        "type": "image/png"
+      }
+    ],
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000"
+  }
+  
