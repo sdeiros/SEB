@@ -22,7 +22,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f8f9fa;
+            background-color: #FFFFFF;
         }
 
         #loginContainer {
@@ -43,17 +43,41 @@
             margin-top: 20px;
         }
 
-        .btn-custom {
+      .btn-custom {
             background-color: #007bff;
             color: white;
             width: 100%;
-            margin-right: 10px;
-            /* Espaço entre os botões */
+            margin-top: 15px; /* espaço maior entre os botões */
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn-custom:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
         }
+        
+        #nomeUsuario {
+    margin-top: -38vh; /* Ajuste este valor conforme necessário */
+}
+
+h2{
+  font-size: 1.6rem;
+}
+
+.matricula {
+  font-size: 1rem;
+  color: gray;
+  margin-top: -0.4rem;
+  line-height: 1.2rem;
+}
+
+.ola {
+    font-weight: 400; /* Para o "Olá," em peso fino */
+}
+
+.nome-aluno {
+    font-weight: bold; /* Para o nome do aluno em negrito */
+}
 
         #mensagem {
             color: red;
@@ -72,10 +96,36 @@
             font-size: 24px;
             cursor: pointer;
         }
+        
+        /* Esconder a nav antes do login */
+.navbar {
+            background-color: transparent; /* Remove a cor de fundo */
+            display: none; /* Esconde a navbar inicialmente */
+            justify-content: center; /* Centraliza o conteúdo da nav */
+            padding: 5px 0; /* Reduz a altura da navbar */
+        }
+
+        .navbar-brand {
+            display: flex; /* Garante que a logo seja um flex item */
+            justify-content: center; /* Centraliza a logo horizontalmente */
+        }
+
+        .navbar-brand img {
+            width: 16vw; /* Define a largura da logo */
+            height: auto;
+            margin-left: 1rem;
+        }
     </style>
 </head>
 
 <body>
+  
+  <nav class="navbar fixed-top">
+        <a href="#" class="navbar-brand">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Simbolo_ISERJ.png" width="100" alt="Logo ISERJ">
+        </a>
+    </nav>
+
     <div id="loginContainer" class="container">
         <form id="loginForm" class="form-group">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Simbolo_ISERJ.png" alt="Logo" id="logo">
@@ -98,10 +148,10 @@
 
         </form>
     </div>
-
+    
     <div id="dadosUsuario" class="container">
-        <h2 id="nomeUsuario"></h2>
-        <p id="matriculaData"></p> <!-- Adicionado para mostrar matrícula e data -->
+           <h2 id="nomeUsuario"></h2>
+    <div id="matriculaUsuario" class="matricula"></div> <!-- Para a matrícula -->
         <ul id="listaDocumentos"></ul>
 
         <!-- Botões adicionais -->
@@ -144,7 +194,7 @@
         <p id="mensagemEnvio"></p>
     </div>
 
-    <div id="secaoInformacoes" class="container" style="display: none;">
+<div id="secaoInformacoes" class="container" style="display: none;">
         <button class="icon-btn" onclick="voltarParaInicio()">
             <i class="fas fa-arrow-left"></i>
         </button>
@@ -157,6 +207,9 @@
             <li><strong>Mãe:</strong> <span id="infoMae"></span></li><br><br>
             <li><strong>Data de Nascimento:</strong> <span id="infoNascimento"></span></li>
             <li><strong>CPF:</strong> <span id="infoCPF"></span></li>
+            <li><strong>Endereço:</strong> <span id="infoEndereco"></span></li>
+            <li><strong>E-mail:</strong> <span id="infoEmail"></span></li>
+            <li><strong>Telefone:</strong> <span id="infoTelefone"></span></li>
         </ul>
     </div>
 
@@ -167,13 +220,14 @@
 
     <script>
         // Variáveis globais para armazenar as informações do usuário
-        var storedMatricula = "";
+               var storedMatricula = "";
         var storedTurma = "";
         var storedNascimento = "";
         var storedPai = "";
         var storedMae = "";
         var storedEndereco = "";
-        var storedContato = "";
+        var storedEmail = "";
+        var storedTelefone = "";
         var isSecretaria = false; // Para controlar se o login é de secretaria
 
 
@@ -183,42 +237,56 @@ async function realizarLogin() {
     var senha = document.getElementById("senha").value;
 
     try {
-        // Verifica na aba Alunos
+        // Chama a API do Google Sheets para pegar os dados da aba de Alunos
         let responseAlunos = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Alunos!A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
         let dataAlunos = await responseAlunos.json();
         var rowsAlunos = dataAlunos.values;
+        
+var loginSuccessful = false;
+                var nomeCompleto = "";
+                var matricula = "";
+                var storedCPF = "";
+                var storedTurma = "";
+                var storedPai = "";
+                var storedMae = "";
+                var storedNascimento = "";
+                var storedEndereco = "";
+                var storedEmail = "";
+                var storedTelefone = "";
 
-        var loginSuccessful = false;
-        var nomeCompleto = "";
-        var matricula = "";
-        var storedCPF = "";
-
-        // Verificação na aba de Alunos
+// Verifica o login na aba de Alunos
         for (var i = 2; i < rowsAlunos.length; i++) {
             var row = rowsAlunos[i];
             if (row.length < 9) continue;
 
-            var storedEmail = row[2];
-            storedCPF = row[1];
-            var storedSenha = row[10];
-            var storedNomeCompleto = row[0];
+            nomeCompleto = row[0]; // Supondo que a coluna A é Nome Completo
+            storedCPF = row[1]; // Supondo que a coluna B é CPF
+            storedEmail = row[2]; // Supondo que a coluna C é E-mail
+            matricula = row[3]; // Supondo que a coluna D é Matrícula
+            storedTurma = row[4]; // Supondo que a coluna E é Turma
+            storedNascimento = row[5]; // Supondo que a coluna F é Data de Nascimento
+            storedPai = row[6]; // Supondo que a coluna G é Pai
+            storedMae = row[7]; // Supondo que a coluna H é Mãe
+            storedEndereco = row[8]; // Supondo que a coluna I é Endereço
+            storedTelefone = row[9]; // Supondo que a coluna J é Telefone
+            var storedSenha = row[10]; // Supondo que a coluna K é a Senha
+
 
             if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
                 loginSuccessful = true;
-                nomeCompleto = storedNomeCompleto;
-                matricula = row[3];
-                isSecretaria = false; // Login como aluno
+                // Exibir o nome do aluno na interface
+                document.getElementById("nomeUsuario").innerHTML = `Olá, <span class="nome-aluno">${nomeCompleto}</span>`;
+                document.getElementById("matriculaUsuario").innerHTML = `Matrícula: ${matricula}`;
                 break;
             }
         }
 
-        // Se o login falhar na aba de Alunos, tenta a aba de Secretaria
+// Se o login falhar na aba de Alunos, tenta a aba de Secretaria
         if (!loginSuccessful) {
             let responseSecretaria = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1PIhLjXNYtbikhyCQCgSff_DL3b0w9L7n9EtRwGUBG-M/values/Secretaria!A:K?key=AIzaSyBA9ar3yt4yUbSVIE9ubrQ5sQuPuz2iWmA');
             let dataSecretaria = await responseSecretaria.json();
             var rowsSecretaria = dataSecretaria.values;
 
-            // Verificação na aba de Secretaria
             for (var i = 2; i < rowsSecretaria.length; i++) {
                 var row = rowsSecretaria[i];
                 if (row.length < 9) continue;
@@ -227,22 +295,52 @@ async function realizarLogin() {
                 storedCPF = row[1];
                 var storedSenha = row[10];
                 var storedNomeCompleto = row[0];
+                storedEndereco = row[8];
+                storedContato = row[9];
+                storedMatricula = row[3];
 
                 if ((usuario === storedEmail || usuario === storedCPF) && senha === storedSenha) {
                     loginSuccessful = true;
                     nomeCompleto = storedNomeCompleto;
-                    isSecretaria = true; // Login como secretaria
+                    matricula = storedMatricula;
+                    isSecretaria = true; // Define que o login é de secretaria
                     break;
                 }
             }
         }
 
-        if (loginSuccessful) {
+        
+
+                if (loginSuccessful) {
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("dadosUsuario").style.display = "block";
+            document.querySelector('.navbar').style.display = 'block'; // Mostra
+            
+ // Exibe o primeiro nome e o segundo nome (se existir) do usuário
+    var nomeUsuario = nomeCompleto.split(" ");
+    var primeiroNome = nomeUsuario[0]; // Primeiro nome
 
-            var nomeUsuario = nomeCompleto.split(" ");
-            document.getElementById("nomeUsuario").textContent = "Olá, " + nomeUsuario[0] + "!";
+    // Se houver mais de um nome, pega o segundo nome
+    var segundoNome = nomeUsuario.length > 1 ? nomeUsuario[1] : ''; // Segundo nome (se existir)
+
+    // Monta a string de nome para exibição
+    var nomeExibido = segundoNome ? primeiroNome + " " + segundoNome : primeiroNome;
+
+    document.getElementById("nomeUsuario").innerHTML = `<span class="ola">Olá,</span> <span class="nome-aluno">${nomeExibido}</span>`;
+    
+    document.getElementById("matriculaUsuario").innerHTML = "Matrícula: " + matricula + " ‐ Turma: " + storedTurma; // Preenche t
+
+            // Preenche os dados na seção de informações
+ document.getElementById("infoNomeCompleto").textContent = nomeCompleto;
+                    document.getElementById("infoMatricula").textContent = matricula;
+                    document.getElementById("infoTurma").textContent = storedTurma;
+                    document.getElementById("infoPai").textContent = storedPai;
+                    document.getElementById("infoMae").textContent = storedMae;
+                    document.getElementById("infoNascimento").textContent = storedNascimento;
+                    document.getElementById("infoCPF").textContent = storedCPF;
+                    document.getElementById("infoEndereco").textContent = storedEndereco;
+                    document.getElementById("infoEmail").textContent = storedEmail;
+                    document.getElementById("infoTelefone").textContent = storedTelefone;
 
             // Exibe informações e opções conforme o tipo de usuário
             if (isSecretaria) {
@@ -264,6 +362,17 @@ async function realizarLogin() {
     }
 }
 
+function voltarParaInicio() {
+    document.getElementById("secaoBoletins").style.display = "none"; // Oculta a seção de boletins
+    document.getElementById("secaoInformacoes").style.display = "none"; // Oculta a seção de informações
+    document.getElementById("secaoNotificacoes").style.display = "none"; // Oculta a seção de notificações
+    document.getElementById("dadosUsuario").style.display = "block"; // Exibe os dados do usuário novamente
+}
+
+function mostrarInformacoes() {
+    document.getElementById("dadosUsuario").style.display = "none"; // Oculta os dados do usuário
+    document.getElementById("secaoInformacoes").style.display = "block"; // Exibe a seção de informações
+}
 
         // Função para buscar e exibir os documentos do usuário (boletins)
         function buscarDocumentosDoUsuario(nomeUsuario, folderId) {
@@ -333,9 +442,6 @@ async function realizarLogin() {
             });
         }
     </script>
-
-
-
 </body>
 
 </html>
